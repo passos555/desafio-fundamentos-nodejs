@@ -23,8 +23,34 @@ class TransactionsRepository {
     return this.transactions;
   }
 
+  // income -> soma de todos os valores de type income
+  // outcome -> soma de todos os valors de type outcome
+  // total -> valor income - outcome
   public getBalance(): Balance {
-    // TODO
+    const income = this.getTotalByType('income');
+    const outcome = this.getTotalByType('outcome');
+    const total = income - outcome;
+
+    const balance = {
+      income,
+      outcome,
+      total,
+    };
+
+    return balance;
+  }
+
+  private getTotalByType(type: 'income' | 'outcome'): number {
+    const transactions = this.all();
+
+    const value = transactions
+      .filter(transaction => transaction.type === type)
+      .map(transaction => transaction.value)
+      .reduce((total, currentValue) => {
+        return total + currentValue;
+      }, 0);
+
+    return value;
   }
 
   public create({ title, value, type }: CreateTransactionDTO): Transaction {
